@@ -50,7 +50,7 @@ include_once("header.php");
 function getalldesignquantityitems(pageno,exchange='',feeder=''){
     $.ajax({
     type: "POST",  
-    url: "newajaxprocess.php", 
+    url: "ajaxprocess.php", 
     data: {calltype:'designquantitylist',pageno:pageno,exchange:exchange,feeder:feeder},
     dataType: "json",      
     success: function(response)  
@@ -63,7 +63,7 @@ function getalldesignquantityitems(pageno,exchange='',feeder=''){
 function getexchanges(){
     $.ajax({
     type: "POST",
-    url: "newajaxprocess.php", 
+    url: "ajaxprocess.php", 
     data: {calltype:'exchangelist'},
     dataType: "json",    
     async: false,  
@@ -76,7 +76,7 @@ function getexchanges(){
 function getfeeders(exchange){
     $.ajax({
     type: "POST",
-    url: "newajaxprocess.php", 
+    url: "ajaxprocess.php", 
     data: {calltype:'feederlist',exchange:exchange},
     dataType: "json",    
     async: false,  
@@ -91,7 +91,7 @@ function getpuitems(puitem){
 puitemname = '';
     $.ajax({
     type: "POST",
-    url: "newajaxprocess.php", 
+    url: "ajaxprocess.php", 
     data: {calltype:'puitemlist',puitem:puitem},
     dataType: "json",    
     async: false,  
@@ -129,7 +129,7 @@ descriptioncell = $(this).parents("tr").find('td').eq(1);
 unit = $(this).parents("tr").find('td').eq(2);
 $.ajax({
     type: "POST",
-    url: "newajaxprocess.php", 
+    url: "ajaxprocess.php", 
     data: {calltype:'getcurrentitem',puitem:puitem},
     dataType: "json",    
     async: false,  
@@ -142,8 +142,8 @@ $.ajax({
 });
 
 $(document).on("click", ".designqntypag", function(){
-exchange = $(this).val();
-feeder = $(this).val();
+exchange = $('#exchange').val();
+feeder = $('#feeder').val();
 pagenum = $(this).attr('pagenum');
 getalldesignquantityitems(pagenum,exchange,feeder);
 getfeeders(exchange);
@@ -171,13 +171,15 @@ $(document).on("keyup", "input[name='designqty']", function(){
 });
 
 
-
 $('[data-toggle="tooltip"]').tooltip();
 var actions = $("table td:last-child").html();
 // Append table with add row form on add new button click
 $(".add-new").click(function(){
     $(this).attr("disabled", "disabled");
     var index = $("table tbody tr:first-child").index();
+    if(index == '-1'){
+        index = 0;
+    }
     var row = '<tr>' +
         '<td>'+ getpuitems("") +'</td>' +
         '<td></td>' +
@@ -185,7 +187,12 @@ $(".add-new").click(function(){
         '<td><input type="text" class="form-control" name="designqty" id="designqty"></td>' +
         '<td>' + actions + '</td>' +
     '</tr>';
+    if(index){
+        $("table tbody").html(row);
+    }
+    else{
     $("table tbody tr:first-child").before(row);
+    }
     $("table tbody tr").eq(index).find(".add, .edit").toggle();
     $('[data-toggle="tooltip"]').tooltip();
 });
@@ -196,11 +203,12 @@ $(document).on("click", ".add", function(){
     var input = $(this).parents("tr").find('input[type="text"]');
     exchange = $('#exchange').val();
     feeder = $('#feeder').val();
-    if (exchange == '' || feeder == ''){
-        alert('Please select Exchange and Feeder');
-    }
     input.each(function(){
-            if(!$(this).val()){
+        if (exchange == ''){
+            alert('Please select Exchange value');
+            empty = true;
+        }
+        else if(!$(this).val()){
             $(this).addClass("error");
             empty = true;
         } else{
@@ -217,7 +225,7 @@ $(document).on("click", ".add", function(){
         }
         $.ajax({
             type: "POST",  
-            url: "newajaxprocess.php", 
+            url: "ajaxprocess.php", 
             data: {calltype:calltype, exchange:exchange,feeder:feeder,puitemid:puitemid, designqty:designqty, id:id},
             dataType: "json",      
             success: function(response)  
@@ -257,8 +265,8 @@ $(document).on("click", ".delete", function(){
     var id = $(this).attr("itemid");
     $.ajax({
         type: "POST",  
-        url: "newajaxprocess.php", 
-        data: {calltype:'puitemsdlt', id:id},
+        url: "ajaxprocess.php", 
+        data: {calltype:'designquantitydlt', id:id},
         dataType: "json",      
         success: function(response)  
         {

@@ -1,6 +1,10 @@
 <?php
 //include_once("includes/functions.php");
-include_once("includes/newfunctions.php");
+include_once("includes/functions.php");
+session_start();
+if (!isset($_SESSION['userlogin']) && $_SESSION['userlogin'] != '1'){
+  header("location:index.php");
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -88,11 +92,11 @@ $curr_filename = basename($_SERVER["SCRIPT_FILENAME"], '.php');
     <a href="countrydivision.php" <?php echo $curr_filename == 'countrydivision' ? 'class="active"' : '' ?> >Country Divisions</a>
     <a href="puitems.php"<?php echo $curr_filename == 'puitems' ? 'class="active"' : '' ?> >PU Items</a>
     <a href="designquantity.php"<?php echo $curr_filename == 'designquantity' ? 'class="active"' : '' ?> >Design Quantities</a>
-    <a href="#about">Executed Works</a>
+    <a href="executedworks.php">Executed Works</a>
     <a href="#about">Summary of Executed Works</a>
     <a href="#about">Bill of Quantities</a>
     <a href="#about">Entity Summary Sheet</a>
     <a href="#about">Invoices</a>
-    <a href="login.php">Logout</a>
+    <a href="logout.php">Logout</a>
   </div>
 </div>

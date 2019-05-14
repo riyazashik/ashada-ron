@@ -13,4 +13,12 @@ define("DB_SERVER", "localhost");
 define("DB_USER", "root");
 define("DB_PASS", 'demo');
 define("DB_NAME", "ashada");
+
+//Username and Password
+
+define("USERNAME", "user");
+define("PASSWORD", "pass");
+
+//pagination
+define("PAGINATION", "10");
 ?>
