@@ -1,0 +1,81 @@
+    header {
+      background: #fff;
+      width: 100%;
+      height: 86px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      border-bottom: 2px solid #000;
+    }
+
+    input {
+      display: none;
+    }
+
+@media only screen and (max-width : 641px) {
+    header {
+      position: absolute;
+      box-shadow: 0 0 5px #000;
+    }
+    nav li {
+      text-align: left;
+      width: 100%;
+      padding: 5px 0;
+      margin: 0;
+      float: none;
+    }
+
+    /*Transitions*/
+    .navi {
+      width: 100%;
+      text-align: left;
+      margin: 0 auto;
+    }
+
+    .navbar-nav {
+      position: unset;  
+    }
+
+    .navi .main-content {
+      padding: 36px;
+      margin: 57px 10px 53px 49px;
+      background: #fff;
+      border: 1px solid #444;
+      right: 0px;
+      -webkit-box-shadow: 0px 3px 5px 0px rgba(50, 50, 50, 0.75);
+      -moz-box-shadow:    0px 3px 5px 0px rgba(50, 50, 50, 0.75);
+      box-shadow:         0px 3px 5px 0px rgba(50, 50, 50, 0.75);
+      background: #eee;
+      height: auto;
+      position: fixed;
+      z-index: 1;
+      top: 10px;
+      overflow: scroll;
+      transition: top 0.5s ease-in-out;
+    }
+
+    .navi input#toggle {
+      display: none;
+    }
+
+    .navi input#toggle + label {
+      display: block;
+      width: 100%;
+      height: 87px;
+      background:url(../img/menu.png) center right no-repeat  #fff;
+      position: fixed;
+      right: 0;
+      top: auto;
+      cursor: pointer;
+      border-bottom: 1px solid #000;
+      z-index: 10;
+    }
+
+    input#toggle:checked ~ label {
+      /*top: 10px;*/
+    }
+
+    input#toggle:checked ~ .main-content {
+      top: -400px;
+    }
+}

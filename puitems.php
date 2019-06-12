@@ -9,33 +9,32 @@ include_once("header.php");
                         <button type="button" class="btn btn-info add-new">Add New</button>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-sm-8"><span class="error errormessage"></span></div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-8"><span class="success successmessage"></span></div>
-                </div>
+            </div>
+            <div id="actiontools" style="display:none">
+            <a class="add" title="Add" data-toggle="tooltip"><i class="material-icons">&#xE03B;</i></a>
+            <a class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
+            <a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
             </div>
             <table class="table table-bordered">
+            <col width="20">
+            <col width="30">
+            <col width="260">
+            <col width="30">
+            <col width="40">
+            <col width="35">
+            <col width="35">
                 <thead>
                     <tr>
                         <th>Type</th>
                         <th>PU item</th>
                         <th>Description</th>
                         <th>Unit</th>
-                        <th>Unit price($)</th>
-                        <th>Design qty</th>
+                        <th class="righttd">Unit price ($)</th>
+                        <th class="righttd">Design qty</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td>
-                        <a class="add" title="Add" data-toggle="tooltip"><i class="material-icons">&#xE03B;</i></a>
-                        <a class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
-                        <a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
-                    </td>
-                    </tr>
                 </tbody>
             </table>
             <div id="pagination_controls"></div>
@@ -87,7 +86,7 @@ $(document).on("keyup", "input[name='type']", function(){
 
 $(document).on("keyup", "input[name='unitprice']", function(){
   if (/\D/g.test(this.value)){
-    this.value = this.value.match(/^\d+\.?\d{0,2}/);
+    this.value = this.value.match(/^\d+\.?\d{0,3}/);
   }
 });
 
@@ -98,7 +97,7 @@ $(document).on("keyup", "input[name='designqty']", function(){
 });
 
 $('[data-toggle="tooltip"]').tooltip();
-var actions = $("table td:last-child").html();
+var actions = $("#actiontools").html();
 // Append table with add row form on add new button click
 $(".add-new").click(function(){
     $(this).attr("disabled", "disabled");
@@ -112,7 +111,13 @@ $(".add-new").click(function(){
         '<td><input type="text" class="form-control" name="designqty" id="designqty"></td>' +
         '<td>' + actions + '</td>' +
     '</tr>';
+    if(index){
+        $("table tbody").html(row);
+    }
+    else{
     $("table tbody tr:first-child").before(row);
+    }
+    $("table tbody tr").find('.add > .material-icons').text("save");
     $("table tbody tr").eq(index).find(".add, .edit").toggle();
     $('[data-toggle="tooltip"]').tooltip();
 });
@@ -151,11 +156,13 @@ $(document).on("click", ".add", function(){
             if (response.status == 0)
             {
                 $(".errormessage").html(response.errormsg);
+                $("#myModalerror").modal('show');
             }
             else{
             $("table tbody").html(response.html);
             $("#pagination_controls").html(response.pagination);
             $(".successmessage").html(response.successmessage);
+            $("#myModalsuccess").modal('show');
             }
             }   
         });
@@ -176,7 +183,7 @@ $(document).on("click", ".edit", function(){
         }
     });
     $(this).parents("tr").find(".add, .edit").toggle();
-    //$('[name="slid"]').css("display", "none");
+    $(this).parents("tr").find('.add > .material-icons').text("save");
     $(".add-new").attr("disabled", "disabled");
 });
 // Delete row on delete button click
@@ -192,6 +199,7 @@ $(document).on("click", ".delete", function(){
         $("table tbody").html(response.html);
         $("#pagination_controls").html(response.pagination);
         $(".successmessage").html(response.successmessage);
+        $("#myModalsuccess").modal('show');
         }   
     });
     $(".add-new").removeAttr("disabled");

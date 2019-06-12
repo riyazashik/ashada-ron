@@ -1,0 +1,198 @@
+body {
+    color: #404E67;
+    background: #F5F7FA;
+    font-family: 'Open Sans', sans-serif;
+}
+
+body .table-wrapper {
+    line-height:0.428571;
+    font-size: 12px !important;
+}
+.table-wrapper {
+    width: 95%;
+    margin: 30px auto;
+    background: #fff;
+    padding: 20px;	
+    margin-top: 30px !important;
+    box-shadow: 0 1px 1px rgba(0,0,0,.05);
+}
+.table-title {
+    padding-bottom: 10px;
+    margin: 0 0 10px;
+}
+.table-title h2 {
+    margin: 6px 0 0;
+    font-size: 22px;
+}
+.table-title .add-new {
+    float: right;
+    height: 30px;
+    font-weight: bold;
+    font-size: 12px;
+    text-shadow: none;
+    min-width: 100px;
+    border-radius: 50px;
+    line-height: 13px;
+}
+.table-title .add-new i {
+    margin-right: 4px;
+}
+table.table {
+    table-layout: fixed;
+}
+table.table tr th, table.table tr td {
+    border-color: #e9e9e9;
+}
+table.table th i {
+    font-size: 13px;
+    margin: 0 5px;
+    cursor: pointer;
+}
+table.table th:last-child {
+    width: 100px;
+}
+table.table td a {
+    cursor: pointer;
+    display: inline-block;
+    margin: 0 5px;
+    min-width: 24px;
+}    
+table.table td a.add {
+    color: #27C46B;
+}
+table.table td a.edit {
+    color: #FFC107;
+}
+table.table td a.delete {
+    color: #E34724;
+}
+table.table td i {
+    font-size: 19px;
+}
+table.table td a.add i {
+    font-size: 24px;
+    margin-right: -1px;
+    position: relative;
+    top: 3px;
+}    
+table.table .form-control {
+    height: 32px;
+    line-height: 32px;
+    box-shadow: none;
+    border-radius: 2px;
+}
+table.table .form-control.error {
+    border-color: #f50000;
+}
+table.table td .add {
+    display: none;
+}
+table.table tr td {
+    padding: 4px;
+}
+font{
+display: inline-block;
+font: normal normal normal 14px/1 FontAwesome;
+font-size: inherit;
+text-rendering: auto;
+-webkit-font-smoothing: antialiased;
+}
+
+table .righttd{
+    text-align:right;
+}
+
+select.form-control{display:inline-block}
+
+.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu>.dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -6px;
+    margin-left: -1px;
+    -webkit-border-radius: 0 6px 6px 6px;
+    -moz-border-radius: 0 6px 6px;
+    border-radius: 0 6px 6px 6px;
+}
+
+.dropdown-submenu:hover>.dropdown-menu {
+    display: block;
+}
+
+.dropdown-submenu>a:after {
+    display: block;
+    content: " ";
+    float: right;
+    width: 0;
+    height: 0;
+    border-color: transparent;
+    border-style: solid;
+    border-width: 5px 0 5px 5px;
+    border-left-color: #ccc;
+    margin-top: 5px;
+    margin-right: -10px;
+}
+
+.navbar-header {
+  margin-left: 50px;
+  margin-right: -50px;
+}
+
+.navbar-collapse{
+  margin-left: 50px;
+}
+
+.nav a.active {
+  background-color: #0099ff;
+  color: white !important;
+}
+
+.navbar-fixed-top {
+    position: unset;
+}
+
+.nav li>a.active:hover{
+  background-color: #0099ff;
+  color: white !important;
+}
+
+.navbar-nav>li>a{
+    padding-top: 30px !important;
+}
+.errorcontainer{
+line-height:20px;
+font-family: arial;
+font-size: 15px;
+}
+.successcontainer{
+line-height:20px;
+font-family: arial;
+font-size: 15px;
+}
+span.errormessage{
+    color: #000000;
+    display: block;
+}
+span.successmessage{
+    color: #000000;
+}
+span.errormessagefordropdown{
+    color: #000000;
+    display: block;
+    margin-left: 70px;
+    margin-top: 5px;
+}
+.logo {
+  display: block;
+  float: left;
+  font-size: 26px;
+  padding: 20px 20px;
+  text-decoration: none;
+}
+
+.form-control {
+    font-size: 12px;
+}

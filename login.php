@@ -8,9 +8,9 @@ session_start();
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Login</title>
+<title>Login | Ashada</title>
 <link rel="stylesheet" href="css/bootstrap.min.css">
-<link rel="stylesheet" href="css/new.css">
+<link rel="stylesheet" href="css/styles.css">
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <style type="text/css">
@@ -103,8 +103,7 @@ if ($_POST['user'] == USERNAME && $_POST['pass'] == PASSWORD){
   <a class="logo">Ashada</a>
 </div>
 <div class="login-form">
-    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>" method="post">
-        <h2 class="text-center">Log in</h2>       
+    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>" method="post">       
         <div class="form-group">
             <input type="text" class="form-control username" name="user" placeholder="Username" required="required">
         </div>
@@ -121,7 +120,7 @@ if ($_POST['user'] == USERNAME && $_POST['pass'] == PASSWORD){
 $(document).on("click", ".btn-block", function(){
 username = $('.username').val();
 password = $('.password').val();
-if (username != 'user' || password != 'pass'){
+if (username != "<?php echo USERNAME; ?>" || password != "<?php echo PASSWORD; ?>"){
 alert('Username and password is incorrect');
 return false;
 }

@@ -9,37 +9,44 @@ include_once("header.php");
                         <button type="button" class="btn btn-info add-new">Add New</button>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-sm-8"><span class="error errormessage"></span></div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-8"><span class="success successmessage"></span></div>
-                </div>
             </div>
             <div class="row" style="margin-bottom:1em;">
-            <div class="col-sm-2"><h4>Exchange:</h4></div>
-            <div class="col-sm-4"><select class='form-control' name='exchange' id="exchange"><option value="">Select Exchange</option></select></div>
-            <div class="col-sm-2"><h4>Feeder:</h4></div>
-            <div class="col-sm-4"><select class='form-control' name='feeder' id="feeder"><option value="">Select Feeder</option></select></div>
+            <div class="col-sm-5">
+                <span style="white-space: nowrap">
+                    <label for="size">Exchange :</label>
+                    <select class='form-control' name='exchange' id="exchange"><option value="">Select Exchange</option></select>
+                </span>
+                </div>
+                <div class="col-sm-1">
+                </div>
+                <div class="col-sm-5">
+                <span style="white-space: nowrap">
+                    <label for="size">Feeder :</label>
+                    <select class='form-control' name='feeder' id="feeder"><option value="">Select Feeder</option></select>
+                </span>
+            </div>
+            </div>
+            <div id="actiontools" style="display:none">
+            <a class="add" title="Add" data-toggle="tooltip"><i class="material-icons">&#xE03B;</i></a>
+            <a class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
+            <a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
             </div>
             <table class="table table-bordered">
+            <col width="20">
+            <col width="260">
+            <col width="20">
+            <col width="30">
+            <col width="30">
                 <thead>
                     <tr>
                         <th>PU item</th>
                         <th>Description</th>
                         <th>Unit</th>
-                        <th>Design qty</th>
+                        <th class="righttd">Contract design qty</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td>
-                        <a class="add" title="Add" data-toggle="tooltip"><i class="material-icons">&#xE03B;</i></a>
-                        <a class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
-                        <a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
-                    </td>
-                </tr>
                 </tbody>
             </table>
             <div id="pagination_controls"></div>
@@ -64,7 +71,7 @@ function getexchanges(){
     $.ajax({
     type: "POST",
     url: "ajaxprocess.php", 
-    data: {calltype:'exchangelist'},
+    data: {calltype:'exchangelistwitharea'},
     dataType: "json",    
     async: false,  
     success: function(response)  
@@ -104,6 +111,7 @@ return puitemname;
 }
 
 $(document).ready(function(){
+$(".add-new").attr("disabled", "disabled");
 //get list of records
 getalldesignquantityitems(1);
 
@@ -115,6 +123,12 @@ $(document).on("change", "#exchange", function(){
 exchange = $(this).val();
 getalldesignquantityitems(1,exchange);
 getfeeders(exchange);
+if(exchange != ''){
+$(".add-new").removeAttr("disabled");
+}
+else{
+$(".add-new").attr("disabled", "disabled");
+}
 });
 
 $(document).on("change", "#feeder", function(){
@@ -172,16 +186,14 @@ $(document).on("keyup", "input[name='designqty']", function(){
 
 
 $('[data-toggle="tooltip"]').tooltip();
-var actions = $("table td:last-child").html();
+var actions = $("#actiontools").html();
 // Append table with add row form on add new button click
 $(".add-new").click(function(){
     $(this).attr("disabled", "disabled");
     var index = $("table tbody tr:first-child").index();
-    if(index == '-1'){
-        index = 0;
-    }
     var row = '<tr>' +
-        '<td>'+ getpuitems("") +'</td>' +
+        '<td currentid=""><input type="text" class="form-control puitemauto" name="puitems" id="puitems" currentitem=""></td>' +
+        //'<td>'+ getpuitems("") +'</td>' +
         '<td></td>' +
         '<td></td>' +
         '<td><input type="text" class="form-control" name="designqty" id="designqty"></td>' +
@@ -193,6 +205,7 @@ $(".add-new").click(function(){
     else{
     $("table tbody tr:first-child").before(row);
     }
+    $("table tbody tr").find('.add > .material-icons').text("save");
     $("table tbody tr").eq(index).find(".add, .edit").toggle();
     $('[data-toggle="tooltip"]').tooltip();
 });
@@ -205,7 +218,7 @@ $(document).on("click", ".add", function(){
     feeder = $('#feeder').val();
     input.each(function(){
         if (exchange == ''){
-            alert('Please select Exchange value');
+            $( "<span class='errormessage'>Please select Exchange</span>" ).insertAfter( "#exchange" );
             empty = true;
         }
         else if(!$(this).val()){
@@ -217,7 +230,7 @@ $(document).on("click", ".add", function(){
     });
     if(!empty){
         var id = $(this).attr("itemid");
-        var puitemid = $(this).parents("tr").find('select[name="puitems"]').val();
+        var puitemid = $(this).parents("tr").find('input[name="puitems"]').attr('currentitem');
         var designqty = $(this).parents("tr").find('input[name="designqty"]').val();
         var calltype = 'designquantityadd';
         if (id != '' && id != undefined){
@@ -233,11 +246,13 @@ $(document).on("click", ".add", function(){
             if (response.status == 0)
             {
                 $(".errormessage").html(response.errormsg);
+                $("#myModalerror").modal('show');
             }
             else{
             $("table tbody").html(response.html);
             $("#pagination_controls").html(response.pagination);
             $(".successmessage").html(response.successmessage);
+            $("#myModalsuccess").modal('show');
             }
             }   
         });
@@ -250,18 +265,24 @@ $(document).on("click", ".edit", function(){
     $(this).parents("tr").find("td:not(:last-child)").each(function(){
         var names = ["puitems", "description", "unit", "designqty"];
         var currentindex = $(this).index();
-        if (currentindex == 0){
-            $(this).html(getpuitems($(this).text()));
-        }
-        else if (currentindex == 3){
+        // if (currentindex == 0){
+        //     $(this).html(getpuitems($(this).text()));
+        // }
+        if (currentindex == 3){
         $(this).html('<input type="text" class="form-control" name="' +names[currentindex]+ '" value="' + $(this).text() + '">');
+        }
+        else if(currentindex == 0){
+        $(this).html('<input type="text" class="form-control puitemauto" name="' +names[currentindex]+ '" value="' + $(this).text() + '" currentitem="' + $(this).parents('tr').find('td:eq( 2 )' ).attr('currentid') + '">');
         }
     });
     $(this).parents("tr").find(".add, .edit").toggle();
+    $(this).parents("tr").find('.add > .material-icons').text("save");
     $(".add-new").attr("disabled", "disabled");
 });
 // Delete row on delete button click
 $(document).on("click", ".delete", function(){
+    exchange = $('#exchange').val();
+    feeder = $('#feeder').val();
     var id = $(this).attr("itemid");
     $.ajax({
         type: "POST",  
@@ -273,9 +294,48 @@ $(document).on("click", ".delete", function(){
         $("table tbody").html(response.html);
         $("#pagination_controls").html(response.pagination);
         $(".successmessage").html(response.successmessage);
+        $("#myModalsuccess").modal('show');
+        getalldesignquantityitems(1,exchange,feeder);
         }   
     });
     $(".add-new").removeAttr("disabled");
+});
+
+//for puitem autocomplete
+$(function(){
+  $(document).on("keydown.autocomplete",".puitemauto",function(e){
+    $(this).autocomplete({
+matchContains: "word",
+autoFill: true,
+      source : '../Ashada/includes/autocomplete.php',
+      
+select: function (event, ui) {
+    var label = ui.item.label;
+    var value = ui.item.value;
+  //document.valueSelectedForAutocomplete = label;
+puitem = ui.item.value;
+descriptioncell = $(this).parents("tr").find('td').eq(1);
+unit = $(this).parents("tr").find('td').eq(2);
+$(".puitemauto").attr('currentitem',puitem);
+$(".puitemauto").val(label);
+$.ajax({
+    type: "POST",
+    url: "ajaxprocess.php", 
+    data: {calltype:'getexecutedworkscurrentitem',puitem:puitem},
+    dataType: "json",    
+    async: false,  
+    success: function(response)  
+    {
+    descriptioncell.html(response.description);
+    unit.html(response.unit);
+    }   
+});
+return false;
+
+}
+    });
+  });
+
 });
 
 });
