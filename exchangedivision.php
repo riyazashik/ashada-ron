@@ -83,7 +83,7 @@ $(".add-new").attr("disabled", "disabled");
 });
 
 $(document).on("click", ".exchangedivision", function(){
-areaname = $('#area').val();
+areaname = $('#areaname').val();
 pagenum = $(this).attr('pagenum');
 getallexchangedivision(pagenum,areaname);
 });
@@ -177,6 +177,9 @@ $(document).on("click", ".delete", function(){
     if (areaname == ''){
         $( "<span class='errormessage'>Please select Area</span>" ).insertAfter( "#areaname" );
         empty = true;
+    }
+    if(id == '' || id == undefined ){
+        getallexchangedivision(1,areaname);
     }
     if(!empty){
         $.ajax({

@@ -248,13 +248,19 @@ if ($calltype == 'designquantitylist'){
 else if ($calltype == 'designquantityadd'){
     if (checkdesignquantityexists($_POST) == 0)
     {
-    $sql = insertdesignquantity($_POST);
-    $html=getdesignquantityhtml(1,$_POST['exchange'],$_POST['feeder']);
-    $pagination=getdesignquantitypag(1,$_POST['exchange'],$_POST['feeder']);
-    $result['html'] = $html;
-    $result['pagination'] = $pagination;
-    $result['status'] = '1';
-    $result['successmessage'] = 'Successfully added';
+        if (isset($_POST['puitemid']) && !empty($_POST['puitemid'])){ 
+        $sql = insertdesignquantity($_POST);
+        $html=getdesignquantityhtml(1,$_POST['exchange'],$_POST['feeder']);
+        $pagination=getdesignquantitypag(1,$_POST['exchange'],$_POST['feeder']);
+        $result['html'] = $html;
+        $result['pagination'] = $pagination;
+        $result['status'] = '1';
+        $result['successmessage'] = 'Successfully added';
+        }
+        else{
+            $result['errormsg'] = 'Please select valid PU item';
+            $result['status'] = 0;
+        }
     }
     else
     {
@@ -267,13 +273,19 @@ else if ($calltype == 'designquantityadd'){
 else if ($calltype == 'designquantityedit'){
     if (checkdesignquantityexists($_POST) == 0)
     {
-    $sql = updatedesignquantity($_POST);
-    $html=getdesignquantityhtml(1,$_POST['exchange'],$_POST['feeder']);
-    $pagination=getdesignquantitypag(1,$_POST['exchange'],$_POST['feeder']);
-    $result['html'] = $html;
-    $result['pagination'] = $pagination;
-    $result['status'] = '1';
-    $result['successmessage'] = 'Successfully Updated';
+        if (isset($_POST['puitemid']) && !empty($_POST['puitemid'])){ 
+        $sql = updatedesignquantity($_POST);
+        $html=getdesignquantityhtml(1,$_POST['exchange'],$_POST['feeder']);
+        $pagination=getdesignquantitypag(1,$_POST['exchange'],$_POST['feeder']);
+        $result['html'] = $html;
+        $result['pagination'] = $pagination;
+        $result['status'] = '1';
+        $result['successmessage'] = 'Successfully Updated';
+        }
+        else{
+            $result['errormsg'] = 'Please select valid PU item';
+            $result['status'] = 0;
+        }
     }
     else
     {
@@ -332,41 +344,55 @@ else if ($calltype == 'getcurrentitem'){
 
 
 //Executed Works Section
-
 if ($calltype == 'executedworkslist'){
     $total=getexecutedworkspgtotal($_POST['areaname'],$_POST['exchange'],$_POST['feeder']);
-    $html=getexecutedworkshtml($_POST['pageno'],$_POST['areaname'],$_POST['exchange'],$_POST['feeder']);
+    $html=getexecutedworkshtml($_POST['pageno'],$_POST['areaname'],$_POST['exchange'],$_POST['feeder'],$_POST['sort_order']);
     $pagination=getexecutedworkspag($_POST['pageno'],$_POST['areaname'],$_POST['exchange'],$_POST['feeder']);
     $result['html'] = $html;
     $result['pagination'] = $pagination;
     $result['status'] = '1';
+    $result['total'] = $total;
     echo json_encode($result);
 }
 
 else if ($calltype == 'executedworksadd'){
-    $sql = insertexecutedworks($_POST);
+    if(empty($_POST['puitemid']) || $_POST['puitemid'] == 'undefined'){
+        $_POST['puitemid'] = getpuitemidbyname($_POST['puitem']);
+    }
+    if (isset($_POST['puitemid']) && !empty($_POST['puitemid'])){
+        $sql = insertexecutedworks($_POST);
+        $html=getexecutedworkshtml(1,$_POST['areaname'],$_POST['exchange'],$_POST['feeder']);
+        $pagination=getexecutedworkspag(1,$_POST['areaname'],$_POST['exchange'],$_POST['feeder']);
+        $result['html'] = $html;
+        $result['pagination'] = $pagination;
+        $result['status'] = '1';
+        $result['successmessage'] = 'Successfully added';    
+    }
+    else
+    {
+        $result['errormsg'] = 'Please select valid PU item';
+        $result['status'] = 0;
+    }
+    echo json_encode($result);
+}
+
+else if ($calltype == 'executedworksedit'){   
+    if(empty($_POST['puitemid']) || $_POST['puitemid'] == 'undefined'){
+        $_POST['puitemid'] = getpuitemidbyname($_POST['puitem']);
+    }
+    if (isset($_POST['puitemid']) && !empty($_POST['puitemid'])){ 
+    $sql = updateexecutedworks($_POST); 
     $html=getexecutedworkshtml(1,$_POST['areaname'],$_POST['exchange'],$_POST['feeder']);
     $pagination=getexecutedworkspag(1,$_POST['areaname'],$_POST['exchange'],$_POST['feeder']);
     $result['html'] = $html;
     $result['pagination'] = $pagination;
     $result['status'] = '1';
-    $result['successmessage'] = 'Successfully added';
-    echo json_encode($result);
-}
-
-else if ($calltype == 'executedworksedit'){    
-    $sql = updateexecutedworks($_POST); 
-    $html=getexecutedworkshtml(1,$_POST['areaname'],$_POST['exchange'],$_POST['feeder']);
-    $pagination=getexecutedworkspag(1,$_POST['areaname'],$_POST['exchange'],$_POST['feeder']);    
-    if ($sql == "not"){
-        $result['status'] = '0';
-        $result['errormsg'] = 'Please enter the valid Invoice number';
-    }
-    else{
-    $result['html'] = $html;
-    $result['pagination'] = $pagination;
-    $result['status'] = '1';
     $result['successmessage'] = 'Successfully Updated';
+    }
+    else
+    {
+        $result['errormsg'] = 'Please select valid PU item';
+        $result['status'] = 0;
     }
     echo json_encode($result);
 }
@@ -457,12 +483,25 @@ else if ($calltype == 'getexecutedworkscurrentitem'){
 else if ($calltype == 'invoicepageexchangelist'){
     $html=getinvoicepageexchangelistselect();
      //$options = "<input type='checkbox' name='exchange[]' value='' /> ALL<br/><br/><br/><br/>";
-     $options = '<label class="checkbox-inline"><input type="checkbox" id="ckbCheckAll" class="exchangealloption" name="exchange" value="">ALL</label><br/><br/><br/><br/>';
+     $options = '<label class="checkbox-inline"><input type="checkbox" id="ckbCheckAll" class="exchangealloption" name="exchange" value="">ALL</label><br/>';
     foreach($html as $row=>$rowvalue){
     //$options .= "<option value='".$row."'>".$rowvalue."</option>";
    //  $options .= "<input type='checkbox' name='exchange[]' value='".$row."' /> ".$rowvalue."<br/><br/><br/><br/>";
-     $options .= '<label class="checkbox-inline"><input type="checkbox" class="exchange" name="exchange" value="'.$row.'">'.$rowvalue.'</label><br/><br/><br/><br/>';
+     $options .= '<label class="checkbox-inline"><input type="checkbox" class="exchange" name="exchange" value="'.$row.'">'.$rowvalue.'</label><br/>';
     }
     echo json_encode($options);
+
 }
+else if ($calltype == 'executedworkslistprint'){
+    $html=getexecutedworkshtml($_POST['pageno'],$_POST['areaname'],$_POST['exchange'],$_POST['feeder'],$_POST['sort_order']);
+    $result['html'] = $html;
+    echo json_encode($result);
+}
+else if($calltype == 'puitemslistPrint')
+{
+        $html=getpuitemshtml($_POST['pageno']);
+        $result['html'] = $html;
+        echo json_encode($result);
+}
+
 ?>

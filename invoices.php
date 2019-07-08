@@ -35,7 +35,7 @@ position: relative;
 
                 <div class="row">
 
-                    <div class="col-sm-6">
+                    <div class="col-sm-5">
 			            <table class="table table-bordered" style="width1:100% !important;" align="center">
 			            <col width="50">
 			            <col width="50">
@@ -51,7 +51,8 @@ position: relative;
 			            <div id="pagination_controls"></div>
             		</div>
 
-
+                    <div class="col-sm-1">
+                    </div>
                     <div class="col-sm-6">
                     <!-- ------------------------------------------------------------ -->
                         <p class="invoice-create-error-message error" style="color:red;"></p>
@@ -61,7 +62,7 @@ position: relative;
 		                </div>    
 		                <div class="row" style="margin-top: 15px;">
 		                    <div class="col-sm-3">Invoice Date</div>
-		                    <div class="col-sm-9"><input type="text" name="invoicedate" id="invoicedate" class="form-control"   style='margin-bottom: 10px;'></div>
+		                    <div class="col-sm-9"><input type="text" name="invoicedate" id="invoicedate" class="form-control"   style='margin-bottom: 10px; readonly'></div>
 		                </div>
 		 
 		                <div class="row" style="margin-top: 15px;">
@@ -120,7 +121,7 @@ function getexchanges(){
 
 $(document).ready(function(){
 	$('#invoicedate').datepicker({
-    format: "dd/mm/yyyy"
+    dateFormat: "dd/mm/yy"
 });
 //get list of records
 getallinvoicess(1);
@@ -157,11 +158,15 @@ $(document).on("click", ".save-invoice-trigger", function(){
     error = 0;
         if(invoiceid == ''){
             error = 1;
-            $( "<span class='errormessage' style='color:red;'>Please enter invoice id</span>" ).insertAfter( "#invoiceid" );
+            $( "<span class='errormessage' style='color:red;'>Please enter invoice no</span>" ).insertAfter( "#invoiceid" );
         }
         if(invoicedate == ''){
             error = 1;
-            $( "<span class='errormessage' style='color:red;'>Please use MM/DD/YYYY format</span>" ).insertAfter( "#invoicedate" );   
+            $( "<span class='errormessage' style='color:red;'>Please enter invoice date</span>" ).insertAfter( "#invoicedate" );   
+        }
+        if (exchange.length <= 0) {
+            error = 1;
+            $( "<span class='errormessage' style='color:red;margin: 9px 9px 9px 159px;'>Please select exchange</span>" ).insertAfter( ".exchangecheckboxes" );
         }
 
         if(!error){

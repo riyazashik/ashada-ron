@@ -100,16 +100,16 @@ $run6->getFont()->applyFromArray(array( "bold" => false, "size" => 10, "name" =>
 						$objPHPExcel->getActiveSheet()->getRowDimension('12')->setRowHeight(20);
 						$objPHPExcel->getActiveSheet()->setCellValue('F12', 'Value ($)')->getStyle('F12')->applyFromArray($style_center)->getFont()->setBold( true );
 						$objPHPExcel->getActiveSheet()->getRowDimension('12')->setRowHeight(20);
-						$objPHPExcel->getActiveSheet()->setCellValue('G12', 'Billed')->getStyle('G12')->applyFromArray($style_center)->getFont()->setBold( true );
+						$objPHPExcel->getActiveSheet()->setCellValue('G12', 'Previous month')->getStyle('G12')->applyFromArray($style_center)->getFont()->setBold( true );
 						$objPHPExcel->getActiveSheet()->getRowDimension('12')->setRowHeight(20);
-						$objPHPExcel->getActiveSheet()->setCellValue('H12', 'Unbilled')->getStyle('H12')->applyFromArray($style_center)->getFont()->setBold( true );
+						$objPHPExcel->getActiveSheet()->setCellValue('H12', 'This month')->getStyle('H12')->applyFromArray($style_center)->getFont()->setBold( true );
 						$objPHPExcel->getActiveSheet()->getRowDimension('12')->setRowHeight(20);
 						$objPHPExcel->getActiveSheet()->setCellValue('I12', 'Total')->getStyle('I12')->applyFromArray($style_center)->getFont()->setBold( true );
 						$objPHPExcel->getActiveSheet()->getRowDimension('12')->setRowHeight(20);
-						$objPHPExcel->getActiveSheet()->setCellValue('J12', 'Billed ($)')->getStyle('J12')->applyFromArray($style_center)->getFont()->setBold( true );
+						$objPHPExcel->getActiveSheet()->setCellValue('J12', 'Previous month ($)')->getStyle('J12')->applyFromArray($style_center)->getFont()->setBold( true );
 						$objPHPExcel->getActiveSheet()->getRowDimension('12')->setRowHeight(20);
 
-						$objPHPExcel->getActiveSheet()->setCellValue('K12', 'Unbilled ($)')->getStyle('K12')->applyFromArray($style_center)->getFont()->setBold( true );
+						$objPHPExcel->getActiveSheet()->setCellValue('K12', 'This month ($)')->getStyle('K12')->applyFromArray($style_center)->getFont()->setBold( true );
 						$objPHPExcel->getActiveSheet()->getRowDimension('12')->setRowHeight(20);
 						$objPHPExcel->getActiveSheet()->setCellValue('L12', 'Total ($)')->getStyle('L12')->applyFromArray($style_center)->getFont()->setBold( true );
 						// $users=array(
@@ -120,7 +120,7 @@ $run6->getFont()->applyFromArray(array( "bold" => false, "size" => 10, "name" =>
 						// 	array('id'=>'1','id1'=>'1002','id2'=>'tes','id3'=>'test','id4'=>'231','id5'=>'1','id6'=>'3','id7'=>'3','id8'=>'4','id9'=>'6','id8'=>'6','id9'=>'7','id10'=>'6','id11'=>'7'),
 						// );
 
-						$items = getbillofquantityexport(1,$area,$exchange,$feeder,$invoice);
+						$items = getbillofquantityexport($area,$exchange,$feeder,$invoice);
 					//	print_r($items); exit;
 						$row_num=13;
 						$testvalue1=0;
@@ -209,7 +209,9 @@ $run6->getFont()->applyFromArray(array( "bold" => false, "size" => 10, "name" =>
 						$row_num=$row_num+3;
 
 						$objPHPExcel->getActiveSheet()->getRowDimension($row_num)->setRowHeight(20);
-						$objPHPExcel->getActiveSheet()->setCellValue('F'.$row_num, 'Total')->getStyle('F'.$row_num)->applyFromArray($style_left)->getFont()->setBold( true );
+						
+					//	$objPHPExcel->getActiveSheet()->setCellValue('F'.$row_num, 'Total')->getStyle('F'.$row_num)->applyFromArray($style_left)->getFont()->setBold( true );
+						$objPHPExcel->getActiveSheet()->setCellValue('F'.$row_num, '')->getStyle('F'.$row_num)->applyFromArray($style_left)->getFont()->setBold( true );
 						/*
 						$objPHPExcel->getActiveSheet()->getRowDimension($row_num)->setRowHeight(20);
 						$objPHPExcel->getActiveSheet()->setCellValue('G'.$row_num, $testvalue1)->getStyle('G'.$row_num)->applyFromArray($style_right)->getFont()->setBold( true );
@@ -228,15 +230,17 @@ $run6->getFont()->applyFromArray(array( "bold" => false, "size" => 10, "name" =>
 						//PHPExcel_Shared_Font::setAutoSizeMethod(PHPExcel_Shared_Font::AUTOSIZE_METHOD_EXACT);
 
 						$objPHPExcel->getActiveSheet()->getRowDimension($row_num)->setRowHeight(20);
-						$objPHPExcel->getActiveSheet()->setCellValue('G'.$row_num, $items['totalrow']['itembillqty'])->getStyle('G'.$row_num)->applyFromArray($style_right)->getNumberFormat()->setFormatCode('0.000');
+					//	$objPHPExcel->getActiveSheet()->setCellValue('G'.$row_num, $items['totalrow']['itembillqty'])->getStyle('G'.$row_num)->applyFromArray($style_right)->getNumberFormat()->setFormatCode('0.000');
 							$objPHPExcel->getActiveSheet()->getStyle('G'.$row_num)->applyFromArray($style_right)->getFont()->setBold( true );
 
 
-						$objPHPExcel->getActiveSheet()->setCellValue('H'.$row_num, $items['totalrow']['itemunbillqty'])->getStyle('H'.$row_num)->applyFromArray($style_right)->getNumberFormat()->setFormatCode('0.000');
+					//	$objPHPExcel->getActiveSheet()->setCellValue('H'.$row_num, $items['totalrow']['itemunbillqty'])->getStyle('H'.$row_num)->applyFromArray($style_right)->getNumberFormat()->setFormatCode('0.000');
 
 							$objPHPExcel->getActiveSheet()->getStyle('H'.$row_num)->applyFromArray($style_right)->getFont()->setBold( true );
 
-						$objPHPExcel->getActiveSheet()->setCellValue('I'.$row_num, $items['totalrow']['itemqtytotal'])->getStyle('I'.$row_num)->applyFromArray($style_right)->getNumberFormat()->setFormatCode('0.000');
+					//	$objPHPExcel->getActiveSheet()->setCellValue('I'.$row_num, $items['totalrow']['itemqtytotal'])->getStyle('I'.$row_num)->applyFromArray($style_right)->getNumberFormat()->setFormatCode('0.000');
+						$objPHPExcel->getActiveSheet()->setCellValue('I'.$row_num,'Total')->getStyle('I'.$row_num)->applyFromArray($style_right)->getNumberFormat()->setFormatCode('0.000');
+					
 							$objPHPExcel->getActiveSheet()->getStyle('I'.$row_num)->applyFromArray($style_right)->getFont()->setBold( true );
 
 						$objPHPExcel->getActiveSheet()->setCellValue('J'.$row_num, $items['totalrow']['itembillexe'])->getStyle('J'.$row_num)->applyFromArray($style_right)->getNumberFormat()->setFormatCode('0.000');

@@ -6,7 +6,14 @@ include_once("header.php");
                 <div class="row">
                     <div class="col-sm-10"><h2>Summary of Executed Works</h2></div>
                     <div class="col-sm-2">
-                        <button type="button" class="btn btn-info export-excel-button" style="display:none;" onclick="validateexportfilterform()" >Export Excel</button>
+                        <div class="row">
+                        <div class="col-sm-6">
+                            <button type="button" class="btn btn-info export-excel-button" style="display:none;" onclick="validateexportfilterform()" >Export Excel</button>
+                        </div>
+                        <div class="col-sm-1">
+                            <button type="button" class="btn btn-info export-excel-print" style="display:none;" onclick="PrintMe('printableArea')" >Print</button>                 
+                        </div>
+                    </div>  
                     </div>
                 </div>
                 <div class="row">
@@ -75,13 +82,13 @@ include_once("header.php");
 
             </form>
             </div>
-
+            <div id="printableArea">
             <table class="table table-bordered">
             <col width="20">
-<col width="30">
-<col width="350">
-<col width="30">
-<col width="30">
+            <col width="30">
+            <col width="350">
+            <col width="30">
+            <col width="30">
                 <thead>
                     <tr>
                         <th>Type</th>
@@ -98,25 +105,73 @@ include_once("header.php");
                 </tbody>
             </table>
             <div id="pagination_controls"></div>
+            </div>
         </div>
     </div>     
     <script type="text/javascript">
-
-function getallexecutedworksitems(pageno,areaname='',exchange='',feeder='',type='',invoice=''){
+function PrintMe(DivID) {
+var disp_setting="toolbar=yes,location=no,";
+disp_setting+="directories=yes,menubar=yes,";
+disp_setting+="scrollbars=no,width=1000px, height=800px";
+   var content_vlue = document.getElementById(DivID).innerHTML.replace(/class="table table-bordered"/g,'class="table"');;
+   var docprint=window.open("","",disp_setting);
+   var areaname = $('#area').val();
+    var header ='';
+    var footer ='';
+   var exchange = $('#exchange').val();
+    var feeder = $('#feeder').val();
+    var type = $('#type').val();
+    var invoice = $('#invoice').val();
+    $.ajax({
+        type: "POST",  
+        url: "includes/function_printer.php", 
+        data: {calltype:'getPrinterHeaderFooter', name:'Summaryexecutedworks',areaname:areaname,exchange:exchange,feeder:feeder,type:type,invoice:invoice},
+        dataType: "json",      
+        success: function(response)  
+        {
+            header= response.header;
+            footer= response.footer;
+            docprint.document.open();
+            docprint.document.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"');
+            docprint.document.write('"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">');
+            docprint.document.write('<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">');
+            docprint.document.write('<head><title>Summary of Executed works</title>');
+            docprint.document.write('<link rel="stylesheet" href="css/bootstrap.min.css"><style type="text/css">@page{ size: auto;margin:3px;');
+            docprint.document.write('font-family:verdana,Arial;color:#000;');
+            docprint.document.write('font-family:Verdana, Geneva, sans-serif; font-size:12px;}');
+            //docprint.document.write('a{color:#000;text-decoration:none;} table .righttd { text-align: right;}</style>');
+            docprint.document.write('a{color:#000;text-decoration:none;}table .righttd { text-align: right;}table, th, td {border: 1px solid black;}.table>thead>tr>th {vertical-align:bottom;border-bottom:1px solid black;}.table>tbody>tr>td{bottom;border-top:1px solid black;}</style>');
+            docprint.document.write('</head><body onLoad="self.print()"><center>');
+            docprint.document.write(header);
+            docprint.document.write("<br/>");
+            docprint.document.write(content_vlue);
+            docprint.document.write('</center>');
+            docprint.document.write(footer);
+            docprint.document.write('</body></html>');
+            docprint.document.close();
+            docprint.focus();
+        }
+    });
+}
+function getallexecutedworksitems(areaname='',exchange='',feeder='',type='',invoice=''){
     $.ajax({
     type: "POST",  
     url: "reportajaxprocess.php", 
-    data: {calltype:'summaryofexecutedworkslist',pageno:pageno,areaname:areaname,exchange:exchange,feeder:feeder,type:type,invoice:invoice},
+    data: {calltype:'summaryofexecutedworkslist',areaname:areaname,exchange:exchange,feeder:feeder,type:type,invoice:invoice},
     dataType: "json",      
     success: function(response)  
     {
     $("table tbody").html(response.html);
-    //$("#pagination_controls").html(response.pagination);
     if(response.total > 0 )
+      {
         $('.export-excel-button').css('display','block');
+        $('.export-excel-print').css('display','block');
+    }
     else
+    {
         $('.export-excel-button').css('display','none'); 
-
+        $('.export-excel-print').css('display','none');   
+    } 
 
     }   
 });
@@ -210,7 +265,7 @@ function validateexportfilterform(){
 
 $(document).ready(function(){
 //get list of records
-getallexecutedworksitems(1);
+getallexecutedworksitems();
 
 //getpuitems();
 
@@ -221,7 +276,7 @@ getinvoice();
 
 $(document).on("change", "#area", function(){
 areaname = $('#area').val();
-getallexecutedworksitems(1,areaname);
+getallexecutedworksitems(areaname);
 getexchanges(areaname);
 getfeeders('');
 getinvoice(areaname);
@@ -230,7 +285,7 @@ getinvoice(areaname);
 $(document).on("change", "#exchange", function(){
 areaname = $('#area').val();
 exchange = $('#exchange').val();
-getallexecutedworksitems(1,areaname,exchange);
+getallexecutedworksitems(areaname,exchange);
 getfeeders(exchange);
 getinvoice(areaname,exchange);
 });
@@ -240,7 +295,7 @@ areaname = $('#area').val();
 exchange = $('#exchange').val();
 feeder = $('#feeder').val();
 getinvoice(areaname,exchange,feeder);
-getallexecutedworksitems(1,areaname,exchange,feeder);
+getallexecutedworksitems(areaname,exchange,feeder);
 });
 
 $(document).on("change", "#type", function(){
@@ -248,7 +303,7 @@ areaname = $('#area').val();
 exchange = $('#exchange').val();
 feeder = $('#feeder').val();
 type = $('#type').val();
-getallexecutedworksitems(1,areaname,exchange,feeder,type);
+getallexecutedworksitems(areaname,exchange,feeder,type);
 });
 
 $(document).on("change", "#invoice", function(){
@@ -257,7 +312,7 @@ exchange = $('#exchange').val();
 feeder = $('#feeder').val();
 invoice = $('#invoice').val();
 type = $('#type').val();
-getallexecutedworksitems(1,areaname,exchange,feeder,type,invoice);
+getallexecutedworksitems(areaname,exchange,feeder,type,invoice);
 });
 
 });

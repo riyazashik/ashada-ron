@@ -1,5 +1,6 @@
 <?php
 include_once("header.php");
+include_once("includes/function_printer.php");
 ?>
 <style>
 
@@ -31,8 +32,15 @@ table .righttd {
                     <div class="col-sm-2">                     
                     </div>
                     <div class="col-sm-2">
-                      <!--  <button type="button" class="btn btn-info create-invoice-trigger"  onclick="showinvoiceform()" >CREATE INVOICE</button>-->
-                        <button type="button" class="btn btn-info export-excel-button"  onclick="validateexportfilterform()"  style="display: none;" >Export Excel</button>
+                       <div class="row">
+                        <div class="col-sm-6">
+                        <!--  <button type="button" class="btn btn-info create-invoice-trigger"  onclick="showinvoiceform()" >CREATE INVOICE</button>-->
+                            <button type="button" class="btn btn-info export-excel-button"  onclick="validateexportfilterform()"  style="display: none;" >Export Excel</button>
+                        </div>
+                        <div class="col-sm-1">
+                            <button type="button" class="btn btn-info export-excel-print" style="display:none;" onclick="PrintMe('printableArea')" >Print</button>                 
+                        </div>
+                    </div>  
                     </div>
                 </div>
 
@@ -46,8 +54,7 @@ table .righttd {
                 </div>
             </div>
 
-                <div class="row" style="height:30px !important;"> 
-                </div>  
+            
                 <?php /*
             <div class="row" style="margin-bottom:1em;">
             <form id="summaryofexecutedworkslistform" action="report.php" method="POST">
@@ -91,7 +98,7 @@ table .righttd {
                     </div>         
             </form>
             </div>
-
+            <div id="printableArea">    
             <table class="table table-bordered">
 
             <col width="5">
@@ -107,7 +114,7 @@ table .righttd {
                         <th colspan="4"  class="text-center">Cable works (Type=2)</th>
                         <th colspan="4"  class="text-center">TOTAL</th>
                     </tr>
-
+<!--
                     <tr>
                         <th></th>
                         <th class="text-center">Design</th>
@@ -117,20 +124,27 @@ table .righttd {
                         <th class="text-center">Design</th>
                         <th colspan="3" class="text-center">Executed values</th>
                     </tr>
+                    -->
+                    <tr>
+                        <th></th>
+                        <th colspan="4" class="text-center">Executed values</th>
+                        <th colspan="4" class="text-center">Executed values</th>
+                        <th colspan="4" class="text-center">Executed values</th>
+                    </tr>
 
                     <tr>
                         <th>Exchange</th>
-                        <th class="text-center">values ($)</th>
-                        <th class="text-center">Billed ($)</th>
-                        <th class="text-center">Unbilled ($)</th>
+                        <th class="text-center">Design<br/>Values ($)</th>
+                        <th class="text-center">Previous<br/>month ($)</th>
+                        <th class="text-center">This<br/>month ($)</th>
                         <th class="text-center">Total</th>
-                        <th class="text-center">values ($)</th>
-                        <th class="text-center">Billed ($)</th>
-                        <th class="text-center">Unbilled ($)</th>
+                        <th class="text-center">Design<br/>Values ($)</th>
+                        <th class="text-center">Previous<br/>month ($)</th>
+                        <th class="text-center">This<br/>month ($)</th>
                         <th class="text-center">Total</th>
-                        <th class="text-center">values ($)</th>
-                        <th class="text-center">Billed ($)</th>
-                        <th class="text-center">Unbilled ($)</th>
+                        <th class="text-center">Design<br/>Values ($)</th>
+                        <th class="text-center">Previous<br/>month ($)</th>
+                        <th class="text-center">This<br/>month ($)</th>
                         <th class="text-center">Total</th>
 
                     </tr>
@@ -142,9 +156,51 @@ table .righttd {
                 </tbody>
             </table>
             <div id="pagination_controls"></div>
+            </div>
         </div>
     </div>     
     <script type="text/javascript">
+     function PrintMe(DivID) {
+var disp_setting="toolbar=yes,location=no,";
+disp_setting+="directories=yes,menubar=yes,";
+disp_setting+="scrollbars=no,width=1000px, height=800px";
+  var content_vlue = document.getElementById(DivID).innerHTML.replace(/class="table table-bordered"/g,'class="table"');
+  var areaname = $('#area').val();
+    var header ='';
+    var footer ='';
+   var exchange = $('#exchange').val();
+    var invoice = $('#invoice').val();
+   var docprint=window.open("","",disp_setting);
+   $.ajax({
+        type: "POST",  
+        url: "includes/function_printer.php", 
+        data: {calltype:'getPrinterHeaderFooter', name:'ExchangeSummarySheet',areaname:areaname,exchange:exchange,feeder:'',type:'',invoice:invoice},
+        dataType: "json",      
+        success: function(response)  
+        {
+            header= response.header;
+            footer= response.footer;
+            docprint.document.open();
+            docprint.document.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"');
+            docprint.document.write('"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">');
+            docprint.document.write('<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">');
+            docprint.document.write('<head><title>Summary of Executed works</title>');
+            docprint.document.write('<link rel="stylesheet" href="css/bootstrap.min.css"><style type="text/css">@page{ size: auto;margin:3px;');
+            docprint.document.write('font-family:verdana,Arial;color:#000;');
+            docprint.document.write('font-family:Verdana, Geneva, sans-serif; font-size:12px;}');
+            //docprint.document.write('a{color:#000;text-decoration:none;}table .righttd { text-align: right;} </style>');
+            docprint.document.write('a{color:#000;text-decoration:none;}table .righttd { text-align: right;}table, th, td {border: 1px solid black;}.table>thead>tr>th {vertical-align:bottom;border-bottom:1px solid black;}.table>tbody>tr>td{bottom;border-top:1px solid black;}</style>');
+            docprint.document.write('</head><body onLoad="self.print()"><center>');
+            docprint.document.write(header);
+            docprint.document.write("</br>");
+            docprint.document.write(content_vlue);
+            docprint.document.write('</center>');
+            docprint.document.write(footer);
+            docprint.document.close();
+            docprint.focus();
+        }
+    });
+}
 
 function getallexecutedworksitems(pageno,areaname='',exchange='',feeder='',invoice=''){
     $.ajax({
@@ -161,9 +217,15 @@ function getallexecutedworksitems(pageno,areaname='',exchange='',feeder='',invoi
     else
         $('.create-invoice-trigger').css('display','none');
     if(response.total > 0 )
+     {
         $('.export-excel-button').css('display','block');
+        $('.export-excel-print').css('display','block');
+    }
     else
+    {
         $('.export-excel-button').css('display','none'); 
+        $('.export-excel-print').css('display','none');
+    }
     }    
 });
 }

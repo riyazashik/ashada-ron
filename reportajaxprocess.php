@@ -9,10 +9,8 @@ $result = array();
 
 if ($calltype == 'summaryofexecutedworkslist'){
     $total=getsummaryexecutedworkspgtotal($_POST['areaname'],$_POST['exchange'],$_POST['feeder'],$_POST['invoice']);
-    $html=getsummaryexecutedworkshtml($_POST['pageno'],$_POST['areaname'],$_POST['exchange'],$_POST['feeder'],$_POST['type'],$_POST['invoice']);
-    $pagination=getsummaryexecutedworkspag($_POST['pageno'],$_POST['areaname'],$_POST['exchange'],$_POST['feeder'],$_POST['invoice']);
+    $html=getsummaryexecutedworkshtml($_POST['areaname'],$_POST['exchange'],$_POST['feeder'],$_POST['type'],$_POST['invoice']);
     $result['html'] = $html;
-    $result['pagination'] = $pagination;
     $result['total'] = $total;
     $result['status'] = '1';
     echo json_encode($result);
@@ -20,12 +18,10 @@ if ($calltype == 'summaryofexecutedworkslist'){
 else if ($calltype == 'billofquantity'){
     $invoicetotal=getbillofquantityinvoicetotal($_POST['areaname'],$_POST['exchange'],$_POST['feeder'],$_POST['invoice']);
     $total=getbillofquantitytotal($_POST['areaname'],$_POST['exchange'],$_POST['feeder'],$_POST['invoice']);
-    $html=getbillofquantityhtml($_POST['pageno'],$_POST['areaname'],$_POST['exchange'],$_POST['feeder'],$_POST['invoice']);
-  //  $pagination=getsummaryexecutedworkspag($_POST['pageno'],$_POST['areaname'],$_POST['exchange'],$_POST['feeder']);
+    $html=getbillofquantityhtml($_POST['areaname'],$_POST['exchange'],$_POST['feeder'],$_POST['invoice']);
     $result['html'] = $html;
     $result['invoicetotal'] = $invoicetotal;
     $result['total'] = $total;
- //   $result['pagination'] = $pagination;
     $result['status'] = '1';
     echo json_encode($result);
 }
@@ -36,11 +32,9 @@ else if ($calltype == 'generateinvoices'){
 }
 else if ($calltype == 'exchangesummarylist'){
     $total=getexchangesummarytotal($_POST['areaname'],$_POST['exchange'],$_POST['feeder'],$_POST['invoice']);
-    $html=getexchangesummaryhtml($_POST['pageno'],$_POST['areaname'],$_POST['exchange'],$_POST['feeder'],$_POST['invoice']);
-  //  $pagination=getsummaryexecutedworkspag($_POST['pageno'],$_POST['areaname'],$_POST['exchange'],$_POST['feeder']);
+    $html=getexchangesummaryhtml($_POST['areaname'],$_POST['exchange'],$_POST['feeder'],$_POST['invoice']);
     $result['html'] = $html;
     $result['total'] = $total;
- //   $result['pagination'] = $pagination;
     $result['status'] = '1';
     echo json_encode($result);
 }
@@ -54,8 +48,6 @@ else if ($calltype == 'allinvoicelist'){
 }
 
 else if ($calltype == 'saveinvoices'){
-  //  print_r($_POST); exit;
-
     $availabletot  = needtocreateinvoicetotal($_POST['cabletype'],$_POST['exchange']);
 
     if($availabletot > 0){

@@ -155,12 +155,20 @@ $.ajax({
 });
 });
 
+$(document).on("keyup", ".puitemauto", function(){
+$(this).parents("tr").find('input[name="puitems"]').attr('currentitem','');
+$(this).parents("tr").find('td').eq(1).empty();
+$(this).parents("tr").find('td').eq(2).empty();
+});
+
 $(document).on("click", ".designqntypag", function(){
 exchange = $('#exchange').val();
 feeder = $('#feeder').val();
 pagenum = $(this).attr('pagenum');
 getalldesignquantityitems(pagenum,exchange,feeder);
 getfeeders(exchange);
+$('#exchange').val(exchange);
+$('#feeder').val(feeder);
 });
 
 $(document).on("keyup", "input[name='type']", function(){
@@ -213,7 +221,8 @@ $(".add-new").click(function(){
 // Add row on add button click
 $(document).on("click", ".add", function(){
     var empty = false;
-    var input = $(this).parents("tr").find('input[type="text"]');
+    //var input = $(this).parents("tr").find('input[type="text"]');
+    var input = $(this).parents("tr").find('input[name="puitems"]');
     exchange = $('#exchange').val();
     feeder = $('#feeder').val();
     input.each(function(){
@@ -272,7 +281,7 @@ $(document).on("click", ".edit", function(){
         $(this).html('<input type="text" class="form-control" name="' +names[currentindex]+ '" value="' + $(this).text() + '">');
         }
         else if(currentindex == 0){
-        $(this).html('<input type="text" class="form-control puitemauto" name="' +names[currentindex]+ '" value="' + $(this).text() + '" currentitem="' + $(this).parents('tr').find('td:eq( 2 )' ).attr('currentid') + '">');
+        $(this).html('<input type="text" class="form-control puitemauto" name="' +names[currentindex]+ '" value="' + $(this).text() + '" currentitem="' + $(this).parents('tr').find('td:eq( 0 )' ).attr('currentid') + '">');
         }
     });
     $(this).parents("tr").find(".add, .edit").toggle();
@@ -284,6 +293,10 @@ $(document).on("click", ".delete", function(){
     exchange = $('#exchange').val();
     feeder = $('#feeder').val();
     var id = $(this).attr("itemid");
+    if(id == '' || id == undefined ){
+        $(".add-new").removeAttr("disabled");
+        getalldesignquantityitems(1,exchange,feeder);
+    }
     $.ajax({
         type: "POST",  
         url: "ajaxprocess.php", 
@@ -307,7 +320,7 @@ $(function(){
     $(this).autocomplete({
 matchContains: "word",
 autoFill: true,
-      source : '../Ashada/includes/autocomplete.php',
+      source : '../includes/autocomplete.php',
       
 select: function (event, ui) {
     var label = ui.item.label;

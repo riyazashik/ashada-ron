@@ -23,32 +23,15 @@ function getsummaryexecutedworkspgtotal($areaname='',$exchange='',$feeder='',$in
 	if ($invoice != ""){
 	$wherecondition .= " AND ew.invoiceid= '$invoice'";
 	}
-	$sql = "SELECT COUNT(ew.id) as total FROM executedworks ew INNER JOIN puitems pu ON ew.puitemid = pu.id $wherecondition";
+	$sql = "SELECT COUNT(ew.id) as total FROM executedworks ew INNER JOIN puitems pu ON ew.puitemid = pu.id $wherecondition GROUP BY pu.type, pu.puitem";
 	$result = mysqli_query($mysqli_conn, $sql);
 	$totalrow = mysqli_fetch_array($result);
 	return $totalrow['total'];
 }
 
-function getsummaryexecutedworkshtml($current_pgno,$areaname='',$exchange='',$feeder='',$type="",$invoice='') {
+function getsummaryexecutedworkshtml($areaname='',$exchange='',$feeder='',$type="",$invoice='') {
 	global $mysqli_conn;
-	$totalrow = getsummaryexecutedworkspgtotal($areaname,$exchange,$feeder,$invoice);
-	$rows_page = PAGINATION; //10
-	$last = ceil($totalrow/$rows_page);
-	if($last < 1){
-		$last = 1;
-	}	
-	$pagenum = 1;
-	if(isset($current_pgno)){
-		$pagenum = preg_replace('#[^0-9]#', '', $current_pgno);
-	}
-	if ($pagenum < 1){ 
-		$pagenum = 1; 
-	}
-	else if ($pagenum > $last){ 
-		$pagenum = $last; 
-	}
-	$limit = 'LIMIT ' .($pagenum - 1) * $rows_page .',' .$rows_page;
-
+	$limit = ' ';
     $wherecondition = "WHERE 1";
     if ($areaname != ""){
         $wherecondition .= " AND ew.areaname= '$areaname'";
@@ -65,8 +48,7 @@ function getsummaryexecutedworkshtml($current_pgno,$areaname='',$exchange='',$fe
 	if ($invoice != ""){
 		$wherecondition .= " AND ew.invoiceid= '$invoice'";
 	}
-	$sql = "SELECT ew.id, ew.from, ew.to, ew.areaname, ew.exchange, ew.feeder, ew.puitemid, ew.measuredqty, ew.remark, pu.type, pu.puitem, pu.description, pu.unit FROM executedworks ew INNER JOIN puitems pu ON ew.puitemid = pu.id $wherecondition ORDER BY pu.type, pu.puitem $limit";
-	//echo $sql;
+	$sql = "SELECT ew.id, ew.from, ew.to, ew.areaname, ew.exchange, ew.feeder, ew.puitemid, sum(ew.measuredqty) as measuredqty, pu.type, pu.puitem, pu.description, pu.unit FROM executedworks ew INNER JOIN puitems pu ON ew.puitemid = pu.id $wherecondition GROUP BY pu.type, pu.puitem ORDER BY pu.type, pu.puitem $limit";
 	$result = mysqli_query($mysqli_conn, $sql) or die("error to display data");
 	$html = "";
     while($row = mysqli_fetch_array($result)){
@@ -129,26 +111,9 @@ function getsummaryexecutedworkspag($current_pgno,$areaname='',$exchange='',$fee
 	return $paginationCtrls;
 }
 
-function getsummaryexecutedworksexport($current_pgno,$areaname='',$exchange='',$feeder='',$type="",$invoice='') {
+function getsummaryexecutedworksexport($areaname='',$exchange='',$feeder='',$type="",$invoice='') {
 	global $mysqli_conn;
-	$totalrow = getsummaryexecutedworkspgtotal($areaname,$exchange,$feeder,$invoice);
-	$rows_page = PAGINATION; //10
-	$last = ceil($totalrow/$rows_page);
-	if($last < 1){
-		$last = 1;
-	}	
-	$pagenum = 1;
-	if(isset($current_pgno)){
-		$pagenum = preg_replace('#[^0-9]#', '', $current_pgno);
-	}
-	if ($pagenum < 1){ 
-		$pagenum = 1; 
-	}
-	else if ($pagenum > $last){ 
-		$pagenum = $last; 
-	}
-	$limit = 'LIMIT ' .($pagenum - 1) * $rows_page .',' .$rows_page;
-
+	$limit = '';
     $wherecondition = "WHERE 1";
     if ($areaname != ""){
         $wherecondition .= " AND ew.areaname= '$areaname'";
@@ -165,9 +130,9 @@ function getsummaryexecutedworksexport($current_pgno,$areaname='',$exchange='',$
 	if ($invoice != ""){
 		$wherecondition .= " AND ew.invoiceid= '$invoice'";
 	}
-	$sql = "SELECT ew.id, ew.from, ew.to, ew.areaname, ew.exchange, ew.feeder, ew.puitemid, ew.measuredqty, ew.remark, pu.type ,pu.puitem, pu.description, pu.unit FROM executedworks ew INNER JOIN puitems pu ON ew.puitemid = pu.id $wherecondition  ORDER BY pu.type, pu.puitem $limit";
+	$sql = "SELECT ew.id, ew.from, ew.to, ew.areaname, ew.exchange, ew.feeder, ew.puitemid,  sum(ew.measuredqty) as measuredqty, pu.type ,pu.puitem, pu.description, pu.unit FROM executedworks ew INNER JOIN puitems pu ON ew.puitemid = pu.id $wherecondition GROUP BY pu.type, pu.puitem  ORDER BY pu.type, pu.puitem $limit";
 	
-	$result = mysqli_query($mysqli_conn, $sql) or die("error to display data");
+	$result = mysqli_query($mysqli_conn, $sql) or die("error to display data2");
 	$html = "";
 	$reportarray = array();
     while($row = mysqli_fetch_array($result)){
@@ -186,25 +151,9 @@ function getsummaryexecutedworksexport($current_pgno,$areaname='',$exchange='',$
 //---------------------------------------
 // BILL OF QUANTITY REPORT
 //---------------------------------------
-function getbillofquantityhtml($current_pgno,$areaname='',$exchange='',$feeder='',$invoice='') {
+function getbillofquantityhtml($areaname='',$exchange='',$feeder='',$invoice='') {
 	global $mysqli_conn;
-	$totalrow = getsummaryexecutedworkspgtotal($areaname,$exchange,$feeder,$invoice);
-	$rows_page = PAGINATION; //10
-	$last = ceil($totalrow/$rows_page);
-	if($last < 1){
-		$last = 1;
-	}	
-	$pagenum = 1;
-	if(isset($current_pgno)){
-		$pagenum = preg_replace('#[^0-9]#', '', $current_pgno);
-	}
-	if ($pagenum < 1){ 
-		$pagenum = 1; 
-	}
-	else if ($pagenum > $last){ 
-		$pagenum = $last; 
-	}
-	$limit = 'LIMIT ' .($pagenum - 1) * $rows_page .',' .$rows_page;
+	$limit = '';
 
     $wherecondition = "WHERE 1";
     if ($areaname != ""){
@@ -220,7 +169,7 @@ function getbillofquantityhtml($current_pgno,$areaname='',$exchange='',$feeder='
 		$wherecondition .= " AND ew.invoiceid= '$invoice'";
 	}
 	
-	$sql = "SELECT ew.id, ew.measuredqty, ew.puitemid, pu.puitem, pu.description, pu.unit, pu.unitprice FROM executedworks ew INNER JOIN puitems pu ON ew.puitemid = pu.id $wherecondition  ORDER BY pu.type, pu.puitem  $limit";
+	$sql = "SELECT ew.id, ew.measuredqty, ew.puitemid, pu.puitem, pu.description, pu.unit, pu.unitprice FROM executedworks ew INNER JOIN puitems pu ON ew.puitemid = pu.id $wherecondition GROUP BY pu.type, pu.puitem ORDER BY pu.type, pu.puitem  $limit";
 	
 	$result = mysqli_query($mysqli_conn, $sql) or die("error to display data");
 	$html = "";
@@ -239,10 +188,10 @@ function getbillofquantityhtml($current_pgno,$areaname='',$exchange='',$feeder='
     	$designtotal = $designqty * $row["unitprice"];
 
     //EXE QTY
-    	$itembilledqtyrecord = getitemexecutedqty($row["puitemid"],$exchange='',$feeder='',"Y");
+    	$itembilledqtyrecord = getitemexecutedqty($row["puitemid"],$exchange='',$feeder='',"Y",$areaname);
     	$itembilledqty = isset($itembilledqtyrecord['totalqty'])?$itembilledqtyrecord['totalqty']:0;
 
-    	$itemunbilledqtyrecord = getitemexecutedqty($row["puitemid"],$exchange='',$feeder='',"N");
+    	$itemunbilledqtyrecord = getitemexecutedqty($row["puitemid"],$exchange='',$feeder='',"N",$areaname);
     	$itemunbilledqty = isset($itemunbilledqtyrecord['totalqty'])?$itemunbilledqtyrecord['totalqty']:0;
 
     	$itemexetotal = $itembilledqty + $itemunbilledqty;
@@ -267,7 +216,9 @@ function getbillofquantityhtml($current_pgno,$areaname='',$exchange='',$feeder='
 
 
     }
-    $html .= '<tr><td colspan="5"></td><td class="tdcellbold righttd">Total</td><td class="tdcellbold righttd">' . number_format($subtotalqtybilled,3) . '</td><td class="tdcellbold righttd">' . number_format($subtotalqtyunbilled,3) . '</td><td class="tdcellbold righttd">' . number_format($subtotalqtytotal,3) . '</td><td class="tdcellbold righttd">' . number_format($subtotalvalbilled,3) . '</td><td class="tdcellbold righttd">' . number_format($subtotalvalunbilled,3) . '</td><td class="tdcellbold righttd">' . number_format($subtotalvaltotal,3) . '</td>
+  //  $html .= '<tr><td colspan="5"></td><td class="tdcellbold righttd">Total</td><td class="tdcellbold righttd">' . number_format($subtotalqtybilled,3) . '</td><td class="tdcellbold righttd">' . number_format($subtotalqtyunbilled,3) . '</td><td class="tdcellbold righttd">' . number_format($subtotalqtytotal,3) . '</td><td class="tdcellbold righttd">' . number_format($subtotalvalbilled,3) . '</td><td class="tdcellbold righttd">' . number_format($subtotalvalunbilled,3) . '</td><td class="tdcellbold righttd">' . number_format($subtotalvaltotal,3) . '</td></tr>';
+  
+    $html .= '<tr><td colspan="8"></td><td class="tdcellbold righttd">Total</td><td class="tdcellbold righttd">' . number_format($subtotalvalbilled,3) . '</td><td class="tdcellbold righttd">' . number_format($subtotalvalunbilled,3) . '</td><td class="tdcellbold righttd">' . number_format($subtotalvaltotal,3) . '</td>
 </tr>';
 }
 else
@@ -280,25 +231,9 @@ else
 	return $html;
 }
 
-function getbillofquantityexport($current_pgno,$areaname='',$exchange='',$feeder='',$invoice='') {
+function getbillofquantityexport($areaname='',$exchange='',$feeder='',$invoice='') {
 	global $mysqli_conn;
-	$totalrow = getsummaryexecutedworkspgtotal($areaname,$exchange,$feeder,$invoice);
-	$rows_page = PAGINATION; //10
-	$last = ceil($totalrow/$rows_page);
-	if($last < 1){
-		$last = 1;
-	}	
-	$pagenum = 1;
-	if(isset($current_pgno)){
-		$pagenum = preg_replace('#[^0-9]#', '', $current_pgno);
-	}
-	if ($pagenum < 1){ 
-		$pagenum = 1; 
-	}
-	else if ($pagenum > $last){ 
-		$pagenum = $last; 
-	}
-	$limit = 'LIMIT ' .($pagenum - 1) * $rows_page .',' .$rows_page;
+	$limit = '';
 
     $wherecondition = "WHERE 1";
     if ($areaname != ""){
@@ -314,7 +249,7 @@ function getbillofquantityexport($current_pgno,$areaname='',$exchange='',$feeder
 		$wherecondition .= " AND ew.invoiceid= '$invoice'";
 	}
 	
-	$sql = "SELECT ew.id, ew.measuredqty, ew.puitemid, pu.puitem, pu.description, pu.unit, pu.unitprice FROM executedworks ew INNER JOIN puitems pu ON ew.puitemid = pu.id $wherecondition ORDER BY pu.type, pu.puitem $limit";
+	$sql = "SELECT ew.id, ew.measuredqty, ew.puitemid, pu.puitem, pu.description, pu.unit, pu.unitprice FROM executedworks ew INNER JOIN puitems pu ON ew.puitemid = pu.id $wherecondition GROUP BY pu.type, pu.puitem ORDER BY pu.type, pu.puitem $limit";
 	
 	$result = mysqli_query($mysqli_conn, $sql) or die("error to display data");
 	$html = "";
@@ -424,7 +359,7 @@ function getbillofquantityinvoicetotal($areaname='',$exchange='',$feeder='',$inv
 	// $wherecondition .= " AND ew.feeder= '$feeder'";
 	// }
 	
-	$sql = "SELECT ew.id, ew.measuredqty, ew.puitemid, pu.puitem, pu.description, pu.unit, pu.unitprice FROM executedworks ew INNER JOIN puitems pu ON ew.puitemid = pu.id $wherecondition  ORDER BY pu.type, pu.puitem  $limit";
+	$sql = "SELECT ew.id, ew.measuredqty, ew.puitemid, pu.puitem, pu.description, pu.unit, pu.unitprice FROM executedworks ew INNER JOIN puitems pu ON ew.puitemid = pu.id $wherecondition  GROUP BY pu.type, pu.puitem ORDER BY pu.type, pu.puitem  $limit";
 	//echo $sql; echo "<br/><br/>";
 	$result = mysqli_query($mysqli_conn, $sql) or die("error to display data");
 	
@@ -465,7 +400,7 @@ function getbillofquantitytotal($areaname='',$exchange='',$feeder='',$invoice=''
 		$wherecondition .= " AND ew.invoiceid= '$invoice'";
 	}
 	
-	$sql = "SELECT ew.id, ew.measuredqty, ew.puitemid, pu.puitem, pu.description, pu.unit, pu.unitprice FROM executedworks ew INNER JOIN puitems pu ON ew.puitemid = pu.id $wherecondition ORDER BY pu.type, pu.puitem  $limit";
+	$sql = "SELECT ew.id, ew.measuredqty, ew.puitemid, pu.puitem, pu.description, pu.unit, pu.unitprice FROM executedworks ew INNER JOIN puitems pu ON ew.puitemid = pu.id $wherecondition GROUP BY pu.type, pu.puitem ORDER BY pu.type, pu.puitem  $limit";
 	$result = mysqli_query($mysqli_conn, $sql) or die("error to display data");
 	
 	return $result->num_rows;
@@ -474,7 +409,7 @@ function getbillofquantitytotal($areaname='',$exchange='',$feeder='',$invoice=''
 function generateinvoices($areaname='',$exchange='',$feeder='',$invoiceid,$invoicedate) {		
 	global $mysqli_conn;
 	if(!empty($invoiceid) && !empty($invoicedate)){
-	$sql = "INSERT INTO invoices (invoiceno,invoicedate) VALUES('".$invoiceid."','".$invoicedate."')";
+	$sql = "INSERT INTO invoices (invoiceno,invoicedate,created_at) VALUES('".$invoiceid."','".$invoicedate."',now())";
 	$result = mysqli_query($mysqli_conn, $sql) or die("error to insert data");
 	$returninvoiceid =  mysqli_insert_id($mysqli_conn);
 
@@ -525,7 +460,7 @@ function getitemdesignqty($itemid,$exchange='',$feeder=''){
 	
 }
 
-function getitemexecutedqty($itemid,$exchange='',$feeder='',$billed=''){	
+function getitemexecutedqty($itemid,$exchange='',$feeder='',$billed='',$area =''){	
 
 	global $mysqli_conn;
 
@@ -533,6 +468,9 @@ function getitemexecutedqty($itemid,$exchange='',$feeder='',$billed=''){
     if ($itemid != ""){
         $wherecondition .= " AND puitemid= '$itemid'";
     }
+    if ($area != ""){
+	$wherecondition .= " AND areaname = '$area'";
+	}
 	if ($exchange != ""){
 	$wherecondition .= " AND exchange= '$exchange'";
 	}
@@ -563,7 +501,7 @@ function getitemexecutedqty($itemid,$exchange='',$feeder='',$billed=''){
 // EXCHANGE SUMMARY SHEET
 //-----------------------------------------------------
 
-function getexchangesummaryhtml($current_pgno,$areaname='',$exchange='',$feeder='', $invoice='') {
+function getexchangesummaryhtml($areaname='',$exchange='',$feeder='', $invoice='') {
 	global $mysqli_conn;
 	$limit = '';
     $wherecondition = "WHERE 1";
@@ -868,7 +806,7 @@ function getallinvoices($pageno) {
 function generateinvoiceid($invoiceid='',$invoicedate='',$cabletype='',$exchange='') {
 	global $mysqli_conn;
 	if(!empty($invoiceid) && !empty($invoicedate)){
-	$sql = "INSERT INTO invoices (invoiceno,invoicedate) VALUES('".$invoiceid."','".$invoicedate."')";
+	$sql = "INSERT INTO invoices (invoiceno,invoicedate,created_at) VALUES('".$invoiceid."','".$invoicedate."',now())";
 	$result = mysqli_query($mysqli_conn, $sql) or die("error to insert data");
 	$returninvoiceid =  mysqli_insert_id($mysqli_conn);
 

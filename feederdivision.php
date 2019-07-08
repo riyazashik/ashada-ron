@@ -114,6 +114,13 @@ $(".add-new").attr("disabled", "disabled");
 }
 });
 
+$(document).on("click", ".feederdivision", function(){
+areaname = $('#areaname').val();
+exchange = $('#exchange').val();
+pagenum = $(this).attr('pagenum');
+getallfeederdivision(pagenum,areaname,exchange);
+});
+
 $('[data-toggle="tooltip"]').tooltip();
 var actions = $("#actiontools").html();
 // Append table with add row form on add new button click
@@ -207,6 +214,11 @@ $(document).on("click", ".delete", function(){
     areaname = $('#areaname').val();
     exchange = $('#exchange').val();
     var feeder = $(this).parents("tr").find('td:first').text();
+    if(id == '' || id == undefined ){
+        getallfeederdivision(1,areaname,exchange);
+        $(".add-new").removeAttr("disabled");
+        return false;
+    }
     $.ajax({
         type: "POST",  
         url: "ajaxprocess.php", 

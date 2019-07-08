@@ -102,7 +102,7 @@ $run6->getFont()->applyFromArray(array( "bold" => false, "size" => 10, "name" =>
 
 
 						
-						$items = getsummaryexecutedworksexport(1,$area,$exchange,$feeder,$type,$invoice);
+						$items = getsummaryexecutedworksexport($area,$exchange,$feeder,$type,$invoice);
 
 						$row_num=13;
 						foreach ($items as $item ) {

@@ -20,5 +20,5 @@ define("USERNAME", "user");
 define("PASSWORD", "pass");
 
 //pagination
-define("PAGINATION", "10");
+define("PAGINATION", "50");
 ?>
